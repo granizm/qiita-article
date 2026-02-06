@@ -1,0 +1,14 @@
+{
+  "name": "qiita-article",
+  "version": "1.0.0",
+  "description": "Qiita記事公開用リポジトリ",
+  "scripts": {
+    "preview": "qiita preview",
+    "new": "qiita new",
+    "publish": "qiita publish --all",
+    "pull": "qiita pull"
+  },
+  "devDependencies": {
+    "@qiita/qiita-cli": "^1.0.0"
+  }
+}

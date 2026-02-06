@@ -1,0 +1,48 @@
+name: Publish Draft to Qiita
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'public/**'
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Qiita CLI
+        run: npm install @qiita/qiita-cli
+
+      - name: Set articles to private (draft)
+        run: |
+          for file in public/*.md; do
+            if [ -f "$file" ]; then
+              sed -i 's/^private: false$/private: true/' "$file"
+            fi
+          done
+
+      - name: Publish to Qiita (Private/Draft)
+        env:
+          QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}
+        run: npx qiita publish --all
+        continue-on-error: true
+
+      - name: Notify Discord (Draft)
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK" ]; then
+            curl -X POST "$DISCORD_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d "{\"content\": \"📝 Qiita下書きを作成しました\\nPR: ${{ github.event.pull_request.html_url }}\"}"
+          fi
