@@ -22,28 +22,20 @@ jobs:
       - name: Install Qiita CLI
         run: npm install @qiita/qiita-cli
 
-      - name: Set articles to public
-        run: |
-          for file in public/*.md; do
-            if [ -f "$file" ]; then
-              sed -i 's/^private: true$/private: false/' "$file"
-            fi
-          done
-
-      - name: Publish to Qiita (Public)
+      - name: Publish to Qiita
         env:
           QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}
         run: npx qiita publish --all
 
-      - name: Commit changes
+      - name: Commit updated articles
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --staged --quiet || git commit -m "chore: Update article metadata"
+          git add public/
+          git diff --staged --quiet || git commit -m "chore: Update Qiita article IDs"
           git push
 
-      - name: Notify Discord (Published)
+      - name: Notify Discord
         if: success()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -51,7 +43,7 @@ jobs:
           if [ -n "$DISCORD_WEBHOOK" ]; then
             curl -X POST "$DISCORD_WEBHOOK" \
               -H "Content-Type: application/json" \
-              -d "{\"content\": \"✅ Qiitaに記事を公開しました\\nCommit: ${{ github.sha }}\"}"
+              -d "{\"content\": \"✅ Qiitaに記事を同期しました\\nCommit: ${{ github.sha }}\"}"
           fi
 
       - name: Notify Discord (Failed)
@@ -62,5 +54,5 @@ jobs:
           if [ -n "$DISCORD_WEBHOOK" ]; then
             curl -X POST "$DISCORD_WEBHOOK" \
               -H "Content-Type: application/json" \
-              -d "{\"content\": \"❌ Qiita公開に失敗しました\\nWorkflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
+              -d "{\"content\": \"❌ Qiita同期に失敗しました\\nWorkflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
           fi
