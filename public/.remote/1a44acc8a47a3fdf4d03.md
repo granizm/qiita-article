@@ -6,7 +6,7 @@ tags:
   - automation
   - GitHubActions
 private: false
-updated_at: '2026-02-06T16:43:41+09:00'
+updated_at: '2026-02-06T17:09:24+09:00'
 id: 1a44acc8a47a3fdf4d03
 organization_url_name: null
 slide: false
@@ -65,3 +65,5 @@ jobs:
 ---
 
 *この記事はテスト投稿です。*
+
+# PR→下書きワークフローテスト 2026-02-06 08:07:55 UTC
