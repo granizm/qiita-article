@@ -1,5 +1,5 @@
 ---
-title: 【実践】Claude Code Agent Teamsで複数AIエージェントを協調させる方法
+title: "【実践】Claude Code Agent Teamsで複数AIエージェントを協調させる方法"
 tags:
   - AI
   - ClaudeCode
@@ -7,11 +7,6 @@ tags:
   - 開発効率化
   - エージェント
 private: true
-updated_at: ''
-id: null
-organization_url_name: null
-slide: false
-ignorePublish: false
 ---
 
 ## はじめに
