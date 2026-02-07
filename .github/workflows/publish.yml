@@ -35,15 +35,41 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: Update Qiita article IDs"
           git push
 
+      - name: Generate article URLs
+        id: urls
+        env:
+          QIITA_USERNAME: ${{ secrets.QIITA_USERNAME }}
+        run: |
+          URLS=""
+          for file in public/*.md; do
+            if [ -f "$file" ] && [[ "$file" != *"_template"* ]]; then
+              # Extract id and private from frontmatter
+              ID=$(grep -m1 "^id:" "$file" | sed 's/id:[[:space:]]*//' | tr -d "'" | tr -d '"')
+              PRIVATE=$(grep -m1 "^private:" "$file" | sed 's/private:[[:space:]]*//')
+              TITLE=$(grep -m1 "^title:" "$file" | sed 's/title:[[:space:]]*//' | tr -d "'" | tr -d '"')
+
+              if [ -n "$ID" ] && [ "$ID" != "null" ]; then
+                if [ "$PRIVATE" = "true" ]; then
+                  URL="https://qiita.com/${QIITA_USERNAME}/private/${ID}"
+                else
+                  URL="https://qiita.com/${QIITA_USERNAME}/items/${ID}"
+                fi
+                URLS="${URLS}\\n- ${TITLE}: ${URL}"
+              fi
+            fi
+          done
+          echo "urls=$URLS" >> $GITHUB_OUTPUT
+
       - name: Notify Discord
         if: success()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ARTICLE_URLS: ${{ steps.urls.outputs.urls }}
         run: |
           if [ -n "$DISCORD_WEBHOOK" ]; then
             curl -X POST "$DISCORD_WEBHOOK" \
               -H "Content-Type: application/json" \
-              -d "{\"content\": \"✅ Qiitaに記事を同期しました\\nCommit: ${{ github.sha }}\"}"
+              -d "{\"content\": \"✅ Qiitaに記事を同期しました\\n\\n**記事一覧**${ARTICLE_URLS}\\n\\nCommit: ${{ github.sha }}\"}"
           fi
 
       - name: Notify Discord (Failed)
