@@ -46,3 +46,42 @@
 - LGTMによる評価システム
 - 組織アカウントとの連携も可能
 - Markdown記法をフル活用
+
+## Frontmatter Requirements（重要）
+
+Qiita CLI v0.5.0以降、以下のフィールドが**必須**です。新規記事作成時は必ずこれらを含めてください。
+
+```yaml
+---
+title: "記事タイトル"
+tags:
+  - タグ1
+  - タグ2
+private: true           # true=限定公開, false=公開
+updated_at: ''          # 空文字列（新規時）
+id: null                # null（新規時、投稿後にIDが付与される）
+organization_url_name: null  # null または 組織URL名
+slide: false            # スライドモード
+ignorePublish: false    # true=公開しない
+---
+```
+
+### テンプレートファイル
+
+新規記事は `public/_template.md` をコピーして作成してください。
+必須フィールドがすべて含まれています。
+
+### よくあるエラー
+
+以下のエラーが出た場合は、frontmatterに必須フィールドが不足しています：
+
+```
+updated_atは文字列で入力してください
+idは文字列で入力してください
+slideの設定はtrue/falseで入力してください
+```
+
+### privateフィールドの意味
+
+- `private: true` → 限定公開（URLを知っている人のみ閲覧可能）
+- `private: false` → 公開（誰でも閲覧可能）
