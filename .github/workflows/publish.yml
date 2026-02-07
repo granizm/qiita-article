@@ -38,8 +38,12 @@ jobs:
       - name: Generate article URLs
         id: urls
         env:
-          QIITA_USERNAME: ${{ secrets.QIITA_USERNAME }}
+          QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}
         run: |
+          # Get username from API using token
+          QIITA_USERNAME=$(curl -s -H "Authorization: Bearer ${QIITA_TOKEN}" \
+            "https://qiita.com/api/v2/authenticated_user" | grep -o '"id":"[^"]*"' | head -1 | sed 's/"id":"//;s/"//')
+
           URLS=""
           for file in public/*.md; do
             if [ -f "$file" ] && [[ "$file" != *"_template"* ]]; then
