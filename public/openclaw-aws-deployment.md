@@ -7,7 +7,7 @@ tags:
   - bedrock
   - OpenClaw
 private: true
-updated_at: '2026-02-08T08:26:22+09:00'
+updated_at: '2026-02-08T08:56:48+09:00'
 id: 86356680ec37702f491d
 organization_url_name: null
 slide: false
